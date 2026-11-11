@@ -1,4 +1,4 @@
-# a) PLotting og aggregering
+# OPPGAVE A)
 
 import csv
 import matplotlib.pyplot as plt
@@ -201,6 +201,70 @@ for stasjon in månedlige_resultater:
 plt.title("Maksimal middelvind per måned")
 plt.xlabel("Dato")
 plt.ylabel("Vind (m/s)")
+plt.legend()
+plt.grid()
+
+plt.tight_layout()
+plt.show()
+
+
+# OPPGAVE D)
+
+from statistics import median
+
+# Samler vindmålingene fra alle år
+vind_per_måned = {}
+
+for måned in range(1, 13):
+    vind_per_måned[måned] = []
+
+# Bruker Sinnes som værstasjon
+for måned in resultater["Sinnes"]:
+
+    månedsnummer = datetime.strptime(måned, "%Y-%m").month
+
+    vind = resultater["Sinnes"][måned]["vind"]
+
+    vind_per_måned[månedsnummer].extend(vind)
+
+
+# Beregner minimum, median og maksimum
+min_vind = []
+median_vind = []
+maks_vind = []
+
+for måned in range(1, 13):
+
+    vind = vind_per_måned[måned]
+
+    if len(vind) > 0:
+
+        min_vind.append(min(vind))
+        median_vind.append(median(vind))
+        maks_vind.append(max(vind))
+
+    else:
+        min_vind.append(None)
+        median_vind.append(None)
+        maks_vind.append(None)
+
+
+# Plotting
+månedsnavn = [
+    "Januar", "Februar", "Mars", "April",
+    "Mai", "Juni", "Juli", "August",
+    "September", "Oktober", "November", "Desember"
+]
+
+plt.figure(figsize=(12, 6))
+
+plt.plot(månedsnavn, min_vind, label="Minimum")
+plt.plot(månedsnavn, median_vind, label="Median")
+plt.plot(månedsnavn, maks_vind, label="Maksimum")
+
+plt.title("Minimum, median og maksimum vindstyrke på Sinnes")
+plt.xlabel("Måned")
+plt.ylabel("Vindstyrke (m/s)")
 plt.legend()
 plt.grid()
 
