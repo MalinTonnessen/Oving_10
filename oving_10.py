@@ -36,7 +36,7 @@ værstasjoner = {
 # Lager en tom dictionary til å samle værdataene
 resultater = {}
 
-# Leser inn dataen som står i filene, går gjennom alle værstasjonene
+# Leser inn data som står i filene, går gjennom alle værstasjonene
 for stasjon in værstasjoner:
 
     filnavn = værstasjoner[stasjon]["fil"]
@@ -53,7 +53,7 @@ for stasjon in værstasjoner:
         leser = csv.reader(fil, delimiter=";")
         next(leser)
 
-# Går gjennom hver enkelt rad i CSV-filen, samler målingene fra samme måned og år
+# Går gjennom hver enkel rad i CSV-filen, samler målingene fra samme måned og år
         for rad in leser:
 
             if len(rad) <= snø_kolonne or rad[2].strip() == "":
@@ -94,7 +94,9 @@ for stasjon in værstasjoner:
     resultater[stasjon] = måneder
 
 
-# Beregner månedsverdiene
+# Beregner månedsverdiene, verdiene oppgaven spør etter
+# Går gjennom hver værstasjon og hver måned
+# Ferdigstiller listene
 månedlige_resultater = {}
 
 for stasjon in resultater:
@@ -123,11 +125,17 @@ for stasjon in resultater:
             datetime.strptime(måned, "%Y-%m")
         )
 
+# Teller hvor mange gyldige snømålinger
+# Finner største snødybde
+# Resultatet None hvis listen er tom
         if len(snødybde) > 0:
             resultat["maks_snø"].append(max(snødybde))
         else:
             resultat["maks_snø"].append(None)
 
+# Nedbør krever mer enn 20 gyldige målinger
+# Hvis det er mer enn 20, legges alle målingene sammen
+# Hvis det er mindre, registreres ikke totalsummen
         if len(nedbør) > 20:
             resultat["total_nedbør"].append(sum(nedbør))
         else:
@@ -135,6 +143,7 @@ for stasjon in resultater:
             print(stasjon, måned,
                   "- Ikke registrert total nedbør denne måneden")
 
+# Finner den høyeste og laveste temperaturen
         if len(temperatur) > 0:
             resultat["maks_temp"].append(max(temperatur))
             resultat["min_temp"].append(min(temperatur))
@@ -142,12 +151,14 @@ for stasjon in resultater:
             resultat["maks_temp"].append(None)
             resultat["min_temp"].append(None)
 
+# Finner den høyeste registrerte middelvinden i måneden
         if len(vind) > 0:
             resultat["maks_vind"].append(max(vind))
         else:
             resultat["maks_vind"].append(None)
 
 
+# Lager grafer med matplotlib
 # Plotting av resultatene
 plt.figure(figsize=(12, 12))
 
@@ -315,12 +326,13 @@ plt.show()
 
 from statistics import median
 
-# Samler vindmålingene fra alle år
+# Lager tomme lister for alle månedene
 vind_per_måned = {}
 
 for måned in range(1, 13):
     vind_per_måned[måned] = []
 
+# Samler vindmålingene fra alle år
 # Bruker Sinnes som værstasjon
 for måned in resultater["Sinnes"]:
 
@@ -328,10 +340,12 @@ for måned in resultater["Sinnes"]:
 
     vind = resultater["Sinnes"][måned]["vind"]
 
+# Legger alle målingene inn i listen for den aktuelle måneden
     vind_per_måned[månedsnummer].extend(vind)
 
 
 # Beregner minimum, median og maksimum
+# Lager tre lister, går gjennom alle månedene
 min_vind = []
 median_vind = []
 maks_vind = []
@@ -340,6 +354,7 @@ for måned in range(1, 13):
 
     vind = vind_per_måned[måned]
 
+# Bruker None dersom en måned ikke har noen gyldige målinger
     if len(vind) > 0:
 
         min_vind.append(min(vind))
